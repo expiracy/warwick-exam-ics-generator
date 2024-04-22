@@ -5,7 +5,6 @@ import pandas as pd
 
 
 class Exam:
-    # date_time_str in form "01 Jan 02:00PM"
     def __init__(self, subject_name: str, start_date_time: datetime, duration, location: str):
         self.subject_name = subject_name
         self.start_date_time = start_date_time
@@ -16,7 +15,7 @@ class Exam:
         exam_event = Event()
 
         exam_event.name = f"{self.subject_name} Exam"
-        exam_event.begin = self.start_date_time
+        exam_event.begin = self.start_date_time - timedelta(hours=1)
         exam_event.duration = self.duration
         exam_event.location = self.location
 
@@ -29,9 +28,10 @@ def main():
 
     cal = Calendar()
 
-    modules_str = input("Enter list of module codes separated by commas: ").upper()
+    #modules_str = input("Enter list of module codes separated by commas: ")
+    modules_str = "ec201, ec202, ec226, ec220, ec233"
 
-    modules = map(lambda s: s.strip(), modules_str.split(","))
+    modules = map(lambda s: s.strip().upper(), modules_str.split(","))
 
     print("[Exams]")
 
@@ -49,7 +49,9 @@ def main():
 
         split_duration = subject_row['Duration'].split(':')
         duration = timedelta(hours=int(split_duration[0]), minutes=int(split_duration[1]), seconds=int(split_duration[2]))
-        cal.events.add(Exam(f"{subject_row['Paper Title']}", start_date_time, duration, subject_row['Room/Platform']).to_event())
+
+        exam = Exam(f"{subject_row['Paper Title']}", start_date_time, duration, subject_row['Room/Platform'])
+        cal.events.add(exam.to_event())
 
         print(f"{module_code}: {subject_row['Paper Title']} | {start_date_time} | {subject_row['Room/Platform']}")
 
