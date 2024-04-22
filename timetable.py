@@ -33,7 +33,7 @@ def main():
 
     modules = map(lambda s: s.strip(), modules_str.split(","))
 
-    print("Events (Verify)")
+    print("[Exams]")
 
     for module_code in modules:
         subject_df = df[df['Paper Code'].str.contains(module_code)]
@@ -44,14 +44,14 @@ def main():
 
         subject_row = subject_df.iloc[0].to_dict()
 
-        print(subject_row)
-
         date = subject_row['Date']
         start_date_time = datetime.strptime(f"{date.year}-{date.month}-{date.day} {subject_row['Time']}", "%Y-%m-%d %H:%M:%S")
 
         split_duration = subject_row['Duration'].split(':')
         duration = timedelta(hours=int(split_duration[0]), minutes=int(split_duration[1]), seconds=int(split_duration[2]))
         cal.events.add(Exam(f"{subject_row['Paper Title']}", start_date_time, duration, subject_row['Room/Platform']).to_event())
+
+        print(f"{module_code}: {subject_row['Paper Title']} | {start_date_time} | {subject_row['Room/Platform']}")
 
     with (open("timetable.ics", "w")) as time_table:
         time_table.write(cal.serialize())
